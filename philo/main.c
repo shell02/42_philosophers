@@ -6,7 +6,7 @@
 /*   By: shdorlin <shdorlin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 19:05:25 by shdorlin          #+#    #+#             */
-/*   Updated: 2022/05/14 18:16:56 by shdorlin         ###   ########.fr       */
+/*   Updated: 2022/05/14 18:42:59 by shdorlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,20 +42,15 @@ void	*routine(void *v_philos)
 	int			status;
 
 	philo = (t_philos *)v_philos;
-	if ((int)(get_time() - philo->rules->time_start) > philo->rules->tt_die)
-	{
-		ft_log(philo->rules, philo->id, "died\n");
-		philo->rules->status = DEAD;
-		philo->status = DEAD;
-		return (NULL);
-	}
 	while (get_status(philo) == ALIVE)
 	{
 		status = loop_life(philo->rules, philo);
 		if (status == DEAD)
 		{
 			ft_log(philo->rules, philo->id, "died\n");
+			pthread_mutex_lock(philo->rules->forks);
 			philo->rules->status = DEAD;
+			pthread_mutex_unlock(philo->rules->forks);
 			philo->status = DEAD;
 			return (NULL);
 		}
