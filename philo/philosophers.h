@@ -6,7 +6,7 @@
 /*   By: shdorlin <shdorlin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 18:36:15 by shdorlin          #+#    #+#             */
-/*   Updated: 2022/05/14 18:09:10 by shdorlin         ###   ########.fr       */
+/*   Updated: 2022/05/15 19:00:00 by shdorlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int				init(t_rules *rules, char **argv);
 /* --- routine --- */
 
 void			ft_life_philos(t_rules *rules);
-void			check_dead(t_rules *rules, t_philos *philo);
+void			check_dead(t_rules *r, t_philos *philo);
 void			end_life(t_rules *rules, t_philos *philo);
 int				loop_life(t_rules *rules, t_philos *philo);
 void			eat(t_philos *philo);
@@ -83,6 +83,7 @@ unsigned long	time_spent(unsigned long start, unsigned long present);
 
 int				ft_isint(char *str);
 int				ft_atoi(char *nptr);
+int				ft_strcmp(char *s1, char *s2);
 int				ft_error(char *str);
 int				ft_strlen(char *str);
 int				check_argv(char **argv);

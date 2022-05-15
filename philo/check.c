@@ -6,7 +6,7 @@
 /*   By: shdorlin <shdorlin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 23:11:44 by shdorlin          #+#    #+#             */
-/*   Updated: 2022/05/14 01:48:15 by shdorlin         ###   ########.fr       */
+/*   Updated: 2022/05/15 21:23:29 by shdorlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,47 +29,55 @@ int	check_over(t_rules *rules, t_philos *philo)
 {
 	int	i;
 
-	if (rules->status == DEAD)
+	if (get_status(philo) == DEAD)
 		return (1);
 	i = 0;
+	pthread_mutex_lock(rules->forks);
 	while (rules->num_meals != -1 && i < rules->num_philos
 		&& philo[i].num_ate >= rules->num_meals)
 		i++;
+	pthread_mutex_unlock(rules->forks);
 	if (i == rules->num_philos)
 	{
 		ft_log(rules, 0, "All meals eaten\n");
 		rules->done_meals = 1;
 		return (1);
 	}
-	usleep(100);
+	usleep(500);
 	return (0);
 }
 
-void	check_dead(t_rules *rules, t_philos *philo)
+int	check_philo(t_rules *r, t_philos philo)
+{
+	if ((philo.last_meal && (int)time_spent(philo.last_meal,
+			get_time()) > r->tt_die) || (!philo.last_meal
+		&& (int)time_spent(r->time_start, get_time()) > r->tt_die))
+	{
+		ft_log(r, philo.id, "died\n");
+		pthread_mutex_lock(r->forks);
+		philo.status = DEAD;
+		r->status = DEAD;
+		pthread_mutex_unlock(r->forks);
+		return (DEAD);
+	}
+	return (ALIVE);
+}
+
+void	check_dead(t_rules *r, t_philos *philo)
 {
 	int				i;
-	unsigned long	tt_die;
 
-	tt_die = rules->tt_die;
-	while (!rules->done_meals)
+	while (!r->done_meals)
 	{
 		i = -1;
-		while (++i < rules->num_philos && rules->status != DEAD)
+		while (++i < r->num_philos)
 		{
-			pthread_mutex_lock(rules->forks);
-			if (philo[i].status == DEAD)
-				rules->status = DEAD;
-			else if ((philo[i].last_meal && time_spent(philo[i].last_meal,
-						get_time()) > tt_die) || (!philo[i].last_meal
-					&& time_spent(rules->time_start, get_time()) > tt_die))
-			{
-				ft_log(rules, philo[i].id, "died\n");
-				rules->status = DEAD;
-			}
-			pthread_mutex_unlock(rules->forks);
+			if (get_status(&philo[i]) == DEAD)
+				break ;
+			if (check_philo(r, philo[i]) == DEAD)
+				break ;
 		}
-		if (check_over(rules, philo))
+		if (check_over(r, philo))
 			break ;
 	}
-	return ;
 }

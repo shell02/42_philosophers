@@ -6,7 +6,7 @@
 /*   By: shdorlin <shdorlin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 19:05:25 by shdorlin          #+#    #+#             */
-/*   Updated: 2022/05/14 18:42:59 by shdorlin         ###   ########.fr       */
+/*   Updated: 2022/05/15 21:19:43 by shdorlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ void	eat(t_philos *philo)
 	else
 		pthread_mutex_lock(&philo->right_fork);
 	ft_log(philo->rules, philo->id, "has taken a fork\n");
-	pthread_mutex_lock(philo->rules->forks);
 	ft_log(philo->rules, philo->id, "is eating\n");
+	pthread_mutex_lock(philo->rules->forks);
 	philo->last_meal = get_time();
 	pthread_mutex_unlock(philo->rules->forks);
 	smart_sleep(philo->rules->tt_eat, philo->rules, philo);
@@ -45,16 +45,7 @@ void	*routine(void *v_philos)
 	while (get_status(philo) == ALIVE)
 	{
 		status = loop_life(philo->rules, philo);
-		if (status == DEAD)
-		{
-			ft_log(philo->rules, philo->id, "died\n");
-			pthread_mutex_lock(philo->rules->forks);
-			philo->rules->status = DEAD;
-			pthread_mutex_unlock(philo->rules->forks);
-			philo->status = DEAD;
-			return (NULL);
-		}
-		else if (status == OVER)
+		if (status == DEAD || status == OVER)
 			return (NULL);
 		usleep(6000);
 	}
