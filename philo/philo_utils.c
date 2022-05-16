@@ -6,7 +6,7 @@
 /*   By: shdorlin <shdorlin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 23:09:31 by shdorlin          #+#    #+#             */
-/*   Updated: 2022/05/15 19:26:27 by shdorlin         ###   ########.fr       */
+/*   Updated: 2022/05/16 08:34:12 by shdorlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,14 +73,5 @@ int	loop_life(t_rules *rules, t_philos *philo)
 	ft_log(rules, philo->id, "is thinking\n");
 	if (get_status(philo) == DEAD)
 		return (DEAD);
-	if ((int)time_spent(philo->last_meal, get_time()) >= rules->tt_die)
-	{
-		ft_log(rules, philo->id, "died\n");
-		pthread_mutex_lock(rules->forks);
-		rules->status = DEAD;
-		philo->status = DEAD;
-		pthread_mutex_unlock(rules->forks);
-		return (OVER);
-	}
 	return (ALIVE);
 }

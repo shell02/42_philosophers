@@ -6,7 +6,7 @@
 /*   By: shdorlin <shdorlin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 23:11:44 by shdorlin          #+#    #+#             */
-/*   Updated: 2022/05/15 21:23:29 by shdorlin         ###   ########.fr       */
+/*   Updated: 2022/05/16 08:36:31 by shdorlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	check_over(t_rules *rules, t_philos *philo)
 		rules->done_meals = 1;
 		return (1);
 	}
-	usleep(500);
+	usleep(7000);
 	return (0);
 }
 
@@ -72,9 +72,9 @@ void	check_dead(t_rules *r, t_philos *philo)
 		i = -1;
 		while (++i < r->num_philos)
 		{
-			if (get_status(&philo[i]) == DEAD)
-				break ;
 			if (check_philo(r, philo[i]) == DEAD)
+				break ;
+			if (get_status(&philo[i]) == DEAD)
 				break ;
 		}
 		if (check_over(r, philo))
