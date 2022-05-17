@@ -6,7 +6,7 @@
 /*   By: shdorlin <shdorlin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 19:05:25 by shdorlin          #+#    #+#             */
-/*   Updated: 2022/05/15 21:19:43 by shdorlin         ###   ########.fr       */
+/*   Updated: 2022/05/17 09:21:13 by shdorlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	*routine(void *v_philos)
 		status = loop_life(philo->rules, philo);
 		if (status == DEAD || status == OVER)
 			return (NULL);
-		usleep(6000);
+		usleep(3000);
 	}
 	return (NULL);
 }
@@ -87,6 +87,11 @@ void	end_life(t_rules *rules, t_philos *philo)
 	i = 0;
 	while (i < rules->num_philos)
 		pthread_join(philo[i++].philo_t, NULL);
+	i = 0;
+	while (i < rules->num_philos && philo[i].num_ate == rules->num_meals)
+		i++;
+	if (i == rules->num_philos)
+		ft_log(rules, 0, "All meals eaten\n");
 	destroy_all_mutex(rules);
 	free_philos(philo);
 }

@@ -6,7 +6,7 @@
 /*   By: shdorlin <shdorlin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 19:58:55 by shdorlin          #+#    #+#             */
-/*   Updated: 2022/05/14 18:11:26 by shdorlin         ###   ########.fr       */
+/*   Updated: 2022/05/17 09:14:38 by shdorlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ int	init_philos(t_rules *rules)
 		rules->philos[i].last_meal = 0;
 		rules->philos[i].num_ate = 0;
 		rules->philos[i].status = ALIVE;
+		pthread_mutex_init(&(rules->philos[i].dead), NULL);
 		pthread_mutex_init(&(rules->philos[i].right_fork), NULL);
 		rules->philos[(i + 1) % rules->num_philos].left_fork
 			= &(rules->philos[i].right_fork);

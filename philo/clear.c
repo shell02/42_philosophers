@@ -6,7 +6,7 @@
 /*   By: shdorlin <shdorlin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/14 00:43:58 by shdorlin          #+#    #+#             */
-/*   Updated: 2022/05/14 15:57:09 by shdorlin         ###   ########.fr       */
+/*   Updated: 2022/05/17 09:22:10 by shdorlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,10 @@ void	destroy_all_mutex(t_rules *rules)
 	pthread_mutex_destroy(rules->forks);
 	free(rules->forks);
 	while (i < rules->num_philos)
+	{
+		pthread_mutex_destroy(&rules->philos[i].dead);
 		pthread_mutex_destroy(rules->philos[i++].left_fork);
+	}
 }
 
 void	free_philos(t_philos *philos)

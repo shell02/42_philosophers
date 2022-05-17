@@ -6,7 +6,7 @@
 /*   By: shdorlin <shdorlin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/10 23:11:44 by shdorlin          #+#    #+#             */
-/*   Updated: 2022/05/16 08:36:31 by shdorlin         ###   ########.fr       */
+/*   Updated: 2022/05/17 09:31:06 by shdorlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,39 +25,18 @@ int	check_argv(char **argv)
 	return (0);
 }
 
-int	check_over(t_rules *rules, t_philos *philo)
-{
-	int	i;
-
-	if (get_status(philo) == DEAD)
-		return (1);
-	i = 0;
-	pthread_mutex_lock(rules->forks);
-	while (rules->num_meals != -1 && i < rules->num_philos
-		&& philo[i].num_ate >= rules->num_meals)
-		i++;
-	pthread_mutex_unlock(rules->forks);
-	if (i == rules->num_philos)
-	{
-		ft_log(rules, 0, "All meals eaten\n");
-		rules->done_meals = 1;
-		return (1);
-	}
-	usleep(7000);
-	return (0);
-}
-
 int	check_philo(t_rules *r, t_philos philo)
 {
 	if ((philo.last_meal && (int)time_spent(philo.last_meal,
-			get_time()) > r->tt_die) || (!philo.last_meal
-		&& (int)time_spent(r->time_start, get_time()) > r->tt_die))
+				get_time()) > r->tt_die) || (!philo.last_meal
+			&& (int)time_spent(r->time_start, get_time()) > r->tt_die))
 	{
-		ft_log(r, philo.id, "died\n");
-		pthread_mutex_lock(r->forks);
-		philo.status = DEAD;
 		r->status = DEAD;
 		pthread_mutex_unlock(r->forks);
+		pthread_mutex_lock(&philo.dead);
+		ft_log(r, philo.id, "died\n");
+		philo.status = DEAD;
+		pthread_mutex_unlock(&philo.dead);
 		return (DEAD);
 	}
 	return (ALIVE);
@@ -65,19 +44,29 @@ int	check_philo(t_rules *r, t_philos philo)
 
 void	check_dead(t_rules *r, t_philos *philo)
 {
-	int				i;
+	int	i;
+	int	count;
 
-	while (!r->done_meals)
+	while (1)
 	{
 		i = -1;
+		count = 0;
 		while (++i < r->num_philos)
 		{
+			pthread_mutex_lock(r->forks);
+			if (philo[i].num_ate == r->num_meals)
+				count++;
+			if (count == r->num_philos)
+			{
+				if (check_philo(r, philo[i]) == DEAD)
+					return ;
+				pthread_mutex_unlock(r->forks);
+				return ;
+			}
 			if (check_philo(r, philo[i]) == DEAD)
-				break ;
-			if (get_status(&philo[i]) == DEAD)
-				break ;
+				return ;
+			pthread_mutex_unlock(r->forks);
 		}
-		if (check_over(r, philo))
-			break ;
+		usleep(6000);
 	}
 }
